@@ -1,0 +1,4 @@
+Pillow
+Flask
+gunicorn
+requests[security]
