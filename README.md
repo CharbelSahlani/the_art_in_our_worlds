@@ -1,0 +1,2 @@
+# the_art_in_our_worlds
+NASA is moving its data to the cloud, and Machine Learning/Artificial Intelligence (ML/AI) can offer an innovative means to analyze and use this massive archive of free and open data. Your challenge is to create an application using ML/AI techniques that allows users to input short text phrases, matches that input to NASA science data or imagery, and displays the results for the user in a creative and artistic manner.
