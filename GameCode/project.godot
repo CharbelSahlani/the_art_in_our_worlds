@@ -41,7 +41,7 @@ window/size/test_height=360
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/sprite_cutter/plugin.cfg" )
+enabled=PoolStringArray(  )
 
 [input]
 
