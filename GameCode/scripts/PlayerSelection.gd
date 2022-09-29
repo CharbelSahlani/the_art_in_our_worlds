@@ -12,7 +12,7 @@ var idx = 0
 var text_idx = 0
 var message = "Welcome Space Hero! Choose Your Spaceship!"
 
-var adventure_game = preload("res://scenes/Adventure.tscn")
+var adventure_game = load("res://scenes/Adventure.tscn")
 
 func _ready():
 	message_timer.start()

@@ -1,10 +1,11 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://scripts/Trivia.gd" type="Script" id=1]
 [ext_resource path="res://assets/background/Nebula Red.png" type="Texture" id=2]
 [ext_resource path="res://assets/fonts/highland-gothic/HighlandGothicFLF-Bold.ttf" type="DynamicFontData" id=3]
 [ext_resource path="res://assets/UI/blue.png" type="Texture" id=4]
 [ext_resource path="res://assets/UI/blue_gray.png" type="Texture" id=5]
+[ext_resource path="res://assets/Audio/curated_sounds/click_002.ogg" type="AudioStream" id=6]
 
 [sub_resource type="Shader" id=2]
 code = "shader_type canvas_item;
@@ -107,6 +108,7 @@ margin_bottom = 205.0
 custom_fonts/font = SubResource( 4 )
 align = 1
 valign = 1
+autowrap = true
 
 [node name="Hint2" type="Label" parent="Hints"]
 margin_left = 238.0
@@ -116,6 +118,7 @@ margin_bottom = 265.0
 custom_fonts/font = SubResource( 4 )
 align = 1
 valign = 1
+autowrap = true
 
 [node name="Hint3" type="Label" parent="Hints"]
 margin_left = 238.0
@@ -125,6 +128,7 @@ margin_bottom = 329.0
 custom_fonts/font = SubResource( 4 )
 align = 1
 valign = 1
+autowrap = true
 
 [node name="AnswerLbl" type="Label" parent="."]
 margin_left = 16.0
@@ -139,9 +143,13 @@ valign = 1
 wait_time = 2.0
 one_shot = true
 
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 6 )
+
 [connection signal="timeout" from="QuestionTimer" to="." method="_on_QuestionTimer_timeout"]
 [connection signal="timeout" from="BgTimer" to="." method="_on_BgTimer_timeout"]
 [connection signal="pressed" from="Hints/VBoxContainer/Hint1" to="." method="_on_Hint1_pressed"]
 [connection signal="pressed" from="Hints/VBoxContainer/Hint2" to="." method="_on_Hint2_pressed"]
 [connection signal="pressed" from="Hints/VBoxContainer/Hint3" to="." method="_on_Hint3_pressed"]
 [connection signal="timeout" from="NextQuestionTimer" to="." method="_on_NextQuestionTimer_timeout"]
+[connection signal="finished" from="AudioStreamPlayer" to="." method="_on_AudioStreamPlayer_finished"]

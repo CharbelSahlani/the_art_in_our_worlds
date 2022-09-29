@@ -20,12 +20,14 @@ var bg_texture = [
 	preload('res://assets/background/Nebula Red.png')
 ]
 
+onready var audio_player = $AudioStreamPlayer
 #index of the response on the fact
 var rdx = 0
 var id = null
 var text_index = 0
 
 func _ready():
+	get_tree().paused = false
 	randomize()
 	id = get_random_fact_id()
 	question_timer.start()
@@ -60,16 +62,21 @@ func _on_Hint1_pressed():
 	rdx = 1
 	display_answer()
 	$NextQuestionTimer.start()
+	audio_player.play()
+	
 	
 func _on_Hint2_pressed():
 	rdx = 2
 	display_answer()
 	$NextQuestionTimer.start()
-
+	audio_player.play()
+	
+	
 func _on_Hint3_pressed():
 	rdx = 3
 	display_answer()
 	$NextQuestionTimer.start()
+	audio_player.play()
 
 func display_answer():
 	if check_answer(id):
@@ -89,3 +96,7 @@ func _on_NextQuestionTimer_timeout():
 	question_timer.start()
 	generate_hint(id)
 
+
+
+func _on_AudioStreamPlayer_finished():
+	audio_player.stop()

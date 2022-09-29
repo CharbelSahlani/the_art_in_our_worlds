@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://assets/fonts/airstrike/airstrike3d.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://assets/background/star_bg/bg_01.png" type="Texture" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://assets/fonts/highland-gothic/HighlandGothicFLF-Bold.ttf" type="DynamicFontData" id=4]
 [ext_resource path="res://assets/fonts/small_print/Small Print.ttf" type="DynamicFontData" id=5]
 [ext_resource path="res://shaders/scrollBg.tres" type="Material" id=6]
+[ext_resource path="res://assets/Audio/background_music/Juhani Junkala [Chiptune Adventures] 1. Stage 1.ogg" type="AudioStream" id=7]
 
 [sub_resource type="DynamicFont" id=1]
 size = 32
@@ -196,5 +197,9 @@ text = "->"
 anims/Collect = SubResource( 6 )
 anims/RESET = SubResource( 7 )
 anims/trivia = SubResource( 8 )
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 7 )
+autoplay = true
 
 [connection signal="timeout" from="WelcomeCountdown" to="." method="_on_WelcomeCountdown_timeout"]
