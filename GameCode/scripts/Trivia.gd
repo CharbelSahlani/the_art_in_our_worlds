@@ -63,21 +63,22 @@ func _on_Hint1_pressed():
 	display_answer()
 	$NextQuestionTimer.start()
 	audio_player.play()
-	
+	get_tree().paused = true
 	
 func _on_Hint2_pressed():
 	rdx = 2
 	display_answer()
 	$NextQuestionTimer.start()
 	audio_player.play()
-	
+	get_tree().paused = true
 	
 func _on_Hint3_pressed():
 	rdx = 3
 	display_answer()
 	$NextQuestionTimer.start()
 	audio_player.play()
-
+	get_tree().paused = true
+	
 func display_answer():
 	if check_answer(id):
 		answer_lbl.text = "Correct!"
@@ -86,6 +87,7 @@ func display_answer():
 
 
 func _on_NextQuestionTimer_timeout():
+	get_tree().paused = false
 	if FACTS.facts.size() > 0:
 		FACTS.facts.erase(id)
 		
