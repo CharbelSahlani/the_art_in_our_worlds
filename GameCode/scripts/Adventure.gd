@@ -39,6 +39,7 @@ var textures = [
 	
 	
 ]
+var main_menu = load("res://scenes/Main.tscn")
 onready var game_over_lbl = $GameOverLbl
 var menu_scene = load('res://scenes/Main.tscn')
 onready var astroid_path = $AstroidPath
@@ -106,3 +107,7 @@ func game_over():
 	yield(get_tree().create_timer(2),"timeout")
 	get_tree().change_scene_to(menu_scene)
 	
+
+func _process(delta):
+	if Input.is_action_just_pressed("ui_cancel"):
+		get_tree().change_scene_to(main_menu)
