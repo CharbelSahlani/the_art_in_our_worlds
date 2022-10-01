@@ -22,9 +22,11 @@
 </form>
 
 <!-- user upload style image for NST -->
+<div id="userImageDiv">
+<h4>upload style image</h4>
 <input type="file" id="image-input" accept="image/jpeg, image/png, image/jpg">
 <div id="display-image"></div>
-
+</div>
 
 <div id="google_translate_element"></div> 
 
@@ -62,6 +64,32 @@ function googleTranslateElementInit() {
                 'google_translate_element'
             ); 
         } 
+</script>
+
+<!-- displaying the NST style image -->
+<script>
+    var checkBox = document.getElementById("nst");
+    var userImage = document.getElementById("userImageDiv");
+
+    checkBox.addEventListener('click',()=>{
+        if (checkBox.checked == true){
+    userImage.style.display = "block";
+     } else {
+    userImage.style.display = "none";
+    }
+    })
+   
+
+
+    const image_input = document.querySelector("#image-input");
+    image_input.addEventListener("change", function() {
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+    const uploaded_image = reader.result;
+    document.querySelector("#display-image").style.backgroundImage = `url(${uploaded_image})`;
+  });
+  reader.readAsDataURL(this.files[0]);
+});
 </script>
 
 <!-- displaying the game on button click -->
