@@ -3,9 +3,7 @@
 from flask import Flask, request, render_template, send_from_directory
 import os
 from PIL import Image, ImageEnhance
-from flask_share import Share
 app = Flask(__name__)
-share = Share(app)
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
