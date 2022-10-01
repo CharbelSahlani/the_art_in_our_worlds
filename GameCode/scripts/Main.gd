@@ -14,7 +14,7 @@ var idx = 0
 var menu_idx = 0
 var show_menu = false
 
-var welcome_message = "Welcome Fellow Space Adventurer\nChoose Your Next Space Adventure"
+var welcome_message = "Welcome Fellow Space Adventurer\nChoose Your Next Space Adventure\nYou Can Press Esc To Return To This Menu!"
 
 var player_select_scene = load("res://scenes/PlayerSelection.tscn")
 var trivia_scene = load('res://scenes/Trivia.tscn')
