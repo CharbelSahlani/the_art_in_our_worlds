@@ -3,6 +3,18 @@
 from flask import Flask, request, render_template, send_from_directory
 import os
 from PIL import Image, ImageEnhance
+import pickle
+
+try:
+    from google.colab import drive
+except ModuleNotFoundError as colab_not_found:
+    raise ModuleNotFoundError('Only run this cell on google colab!') from colab_not_found
+
+# This will prompt for authorization.
+drive.mount('/content/drive')
+
+# nst_class.load_vgg_model()
+
 app = Flask(__name__)
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
