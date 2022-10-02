@@ -1,31 +1,110 @@
-.btn-lg,
-.nav-pills > li > a,
-.container .jumbotron {
-    border: 0px;
-    border-radius: 0px;
+body{
+    background-color: #36588C;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap:10px;
+    margin: 0;
+    padding: 0;
 }
 
-#upload-button,
-#file-picker {
-    margin-top: 30px;
+.background {
+    position:absolute;
+    display: block;
+    top: 0;  
+    left : 0;
+    z-index: -1;
+    }
+
+#image{
+    border: 2px solid white;
+    border-radius: 5px;
+}
+#image:hover{
+    opacity: 0.8;
 }
 
-div#image-container {
-    max-width: 500px;
+iframe{
+    border: 2px solid white;
+    border-radius: 5px;
 }
 
-div#image-container > img {
-    max-width: 100%;
+@font-face {
+    font-family: spaceFont;
+    src: url('./fonts/Agelast-mLlAm.otf');
 }
 
-#form-crop > input[type=number] {
-    width: 50px;
-} 
-
-#form-blend > input[type=number] {
-    width: 77px;
-} 
-
-.hidden {
-	display: none !important;
+h2{
+    font-size: 30px;
+    color:FFFFFF;
+    font-family: spaceFont;
 }
+h3, h4{
+   color:FFFFFF;
+   font-family: spaceFont;
+}
+
+
+input{
+    border: none;    
+    border-radius: 5px;
+    padding: 5px 32px;   
+    margin: 4px 2px;    
+}
+
+input[type=text]{
+    padding-left: 8px
+}
+
+input:focus{
+    background-color: lightgray;
+}
+
+input[type=submit]{
+    background-color: white;
+    border: none;
+    color: black;
+    padding: 5px 32px;
+    text-decoration: none;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+input[type=submit]:hover{
+    background-color: lightgray;
+}
+
+label{
+    color: white;
+    font-family: spaceFont;
+    
+}
+
+#gameDiv{
+    align-self: center;
+}
+
+#NSTExample{
+    color: white;
+    font-family: spaceFont;
+}
+
+#display-image{
+    width: 400px;
+    height: 225px;
+    border: 1px solid black;
+    background-position: center;
+    background-size: cover;
+  }
+
+  #userImageDiv{
+    display: none;
+  }
+
+  #google_translate_element{
+    align-self: flex-end;
+    padding-right: 15px;
+    padding-top: 5px;
+  }
+  

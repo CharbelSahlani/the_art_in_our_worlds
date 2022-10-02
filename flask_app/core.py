@@ -25,7 +25,7 @@ def rotate(angle, filename):
         return render_template("error.html", message="Invalid angle parameter (-359 to 359)"), 400
 
     # open and process image
-    target = os.path.join(APP_ROOT, 'static/images')
+    target = os.path.join(APP_ROOT, 'static_temp/images')
     destination = "/".join([target, filename])
 
     img = Image.open(destination)
@@ -45,7 +45,7 @@ def rotate(angle, filename):
 def flip(mode, filename):
 
     # open and process image
-    target = os.path.join(APP_ROOT, 'static/images')
+    target = os.path.join(APP_ROOT, 'static_temp/images')
     destination = "/".join([target, filename])
 
     img = Image.open(destination)
@@ -72,7 +72,7 @@ def flip(mode, filename):
 def crop(x1, y1, x2, y2, filename):
 
     # open image
-    target = os.path.join(APP_ROOT, 'static/images')
+    target = os.path.join(APP_ROOT, 'static_temp/images')
     destination = "/".join([target, filename])
 
     img = Image.open(destination)
@@ -130,7 +130,7 @@ def blend(alpha, filename1, filename2):
         return render_template("error.html", message="Invalid alpha value (0-100)"), 400
 
     #open images
-    target = os.path.join(APP_ROOT, 'static/images')
+    target = os.path.join(APP_ROOT, 'static_temp/images')
     destination1 = "/".join([target, filename1])
     destination2 = "/".join([target, filename2])
 
@@ -162,10 +162,10 @@ def blend(alpha, filename1, filename2):
     return send_image('temp.png')
 
 
-# retrieve file from 'static/images' directory
-@app.route('/static/images/<filename>')
+# retrieve file from 'static_temp/images' directory
+@app.route('/static_temp/images/<filename>')
 def send_image(filename):
-    return send_from_directory("static/images", filename)
+    return send_from_directory("static_temp/images", filename)
 
 
 if __name__ == "__main__":

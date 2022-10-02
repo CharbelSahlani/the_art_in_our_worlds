@@ -1,0 +1,185 @@
+[gd_scene load_steps=13 format=2]
+
+[ext_resource path="res://scripts/Trivia.gd" type="Script" id=1]
+[ext_resource path="res://assets/background/Nebula Red.png" type="Texture" id=2]
+[ext_resource path="res://assets/fonts/highland-gothic/HighlandGothicFLF-Bold.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://assets/UI/blue.png" type="Texture" id=4]
+[ext_resource path="res://assets/UI/blue_gray.png" type="Texture" id=5]
+[ext_resource path="res://assets/Audio/curated_sounds/click_002.ogg" type="AudioStream" id=6]
+[ext_resource path="res://assets/UI/Ok_BTN.png" type="Texture" id=7]
+
+[sub_resource type="Shader" id=2]
+code = "shader_type canvas_item;
+
+
+uniform float speed;
+
+
+void fragment () {
+	COLOR = texture(TEXTURE, vec2(UV.x + TIME * speed, UV.y));
+}"
+
+[sub_resource type="ShaderMaterial" id=3]
+shader = SubResource( 2 )
+shader_param/speed = 0.1
+
+[sub_resource type="DynamicFont" id=1]
+font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=4]
+size = 14
+font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=5]
+size = 32
+font_data = ExtResource( 3 )
+
+[node name="Trivia" type="Node2D"]
+script = ExtResource( 1 )
+
+[node name="Bg" type="TextureRect" parent="."]
+material = SubResource( 3 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -57.0002
+margin_top = -238.0
+margin_right = 4039.0
+margin_bottom = 3858.0
+rect_scale = Vector2( 0.2, 0.2 )
+texture = ExtResource( 2 )
+
+[node name="QuestionLbl" type="Label" parent="."]
+margin_left = 9.0
+margin_top = 10.0
+margin_right = 627.0
+margin_bottom = 65.0
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_fonts/font = SubResource( 1 )
+align = 1
+valign = 1
+autowrap = true
+
+[node name="QuestionTimer" type="Timer" parent="."]
+pause_mode = 2
+wait_time = 0.05
+
+[node name="BgTimer" type="Timer" parent="."]
+wait_time = 30.0
+one_shot = true
+
+[node name="Hints" type="Node2D" parent="."]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Hints"]
+margin_left = 180.0
+margin_top = 150.0
+margin_right = 580.0
+margin_bottom = 525.0
+rect_scale = Vector2( 0.7, 0.5 )
+custom_constants/separation = 0
+
+[node name="Hint1" type="TextureButton" parent="Hints/VBoxContainer"]
+modulate = Color( 0, 0.367188, 1, 1 )
+margin_right = 400.0
+margin_bottom = 125.0
+texture_normal = ExtResource( 4 )
+texture_hover = ExtResource( 5 )
+texture_focused = ExtResource( 5 )
+
+[node name="Hint2" type="TextureButton" parent="Hints/VBoxContainer"]
+modulate = Color( 0, 0.367188, 1, 1 )
+margin_top = 125.0
+margin_right = 400.0
+margin_bottom = 250.0
+texture_normal = ExtResource( 4 )
+texture_hover = ExtResource( 5 )
+texture_focused = ExtResource( 5 )
+
+[node name="Hint3" type="TextureButton" parent="Hints/VBoxContainer"]
+modulate = Color( 0, 0.367188, 1, 1 )
+margin_top = 250.0
+margin_right = 400.0
+margin_bottom = 375.0
+texture_normal = ExtResource( 4 )
+texture_hover = ExtResource( 5 )
+texture_focused = ExtResource( 5 )
+
+[node name="Hint" type="Label" parent="Hints"]
+margin_left = 205.0
+margin_top = 167.0
+margin_right = 433.0
+margin_bottom = 205.0
+custom_fonts/font = SubResource( 4 )
+align = 1
+valign = 1
+autowrap = true
+
+[node name="Hint2" type="Label" parent="Hints"]
+margin_left = 205.0
+margin_top = 227.0
+margin_right = 438.0
+margin_bottom = 265.0
+custom_fonts/font = SubResource( 4 )
+align = 1
+valign = 1
+autowrap = true
+
+[node name="Hint3" type="Label" parent="Hints"]
+margin_left = 205.0
+margin_top = 291.0
+margin_right = 443.0
+margin_bottom = 329.0
+custom_fonts/font = SubResource( 4 )
+align = 1
+valign = 1
+autowrap = true
+
+[node name="AnswerLbl" type="Label" parent="."]
+margin_left = 16.0
+margin_top = 89.0
+margin_right = 633.0
+margin_bottom = 144.0
+custom_fonts/font = SubResource( 5 )
+align = 1
+valign = 1
+
+[node name="NextQuestionTimer" type="Timer" parent="."]
+pause_mode = 2
+wait_time = 2.0
+one_shot = true
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 6 )
+
+[node name="CorrectWrongContainer" type="Node2D" parent="."]
+
+[node name="C1" type="TextureRect" parent="CorrectWrongContainer"]
+margin_left = 480.0
+margin_top = 161.0
+margin_right = 690.0
+margin_bottom = 371.0
+rect_scale = Vector2( 0.2, 0.2 )
+texture = ExtResource( 7 )
+
+[node name="C2" type="TextureRect" parent="CorrectWrongContainer"]
+margin_left = 480.0
+margin_top = 224.0
+margin_right = 690.0
+margin_bottom = 434.0
+rect_scale = Vector2( 0.2, 0.2 )
+texture = ExtResource( 7 )
+
+[node name="C3" type="TextureRect" parent="CorrectWrongContainer"]
+margin_left = 480.0
+margin_top = 290.0
+margin_right = 690.0
+margin_bottom = 500.0
+rect_scale = Vector2( 0.2, 0.2 )
+texture = ExtResource( 7 )
+
+[connection signal="timeout" from="QuestionTimer" to="." method="_on_QuestionTimer_timeout"]
+[connection signal="timeout" from="BgTimer" to="." method="_on_BgTimer_timeout"]
+[connection signal="pressed" from="Hints/VBoxContainer/Hint1" to="." method="_on_Hint1_pressed"]
+[connection signal="pressed" from="Hints/VBoxContainer/Hint2" to="." method="_on_Hint2_pressed"]
+[connection signal="pressed" from="Hints/VBoxContainer/Hint3" to="." method="_on_Hint3_pressed"]
+[connection signal="timeout" from="NextQuestionTimer" to="." method="_on_NextQuestionTimer_timeout"]
+[connection signal="finished" from="AudioStreamPlayer" to="." method="_on_AudioStreamPlayer_finished"]

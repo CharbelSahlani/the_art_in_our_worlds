@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/impactTin_medium_002.ogg-76e70635e4ef0edce5bae79322574b82.oggstr"
+
+[deps]
+
+source_file="res://assets/Audio/impact_audio/impactTin_medium_002.ogg"
+dest_files=[ "res://.import/impactTin_medium_002.ogg-76e70635e4ef0edce5bae79322574b82.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0

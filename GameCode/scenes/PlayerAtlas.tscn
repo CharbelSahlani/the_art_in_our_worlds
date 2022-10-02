@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://assets/rocket/spaceship 2/spaceship2.png" type="Texture" id=1]
+[ext_resource path="res://addons/sprite_cutter/AtlasScene.gd" type="Script" id=2]
+
+[node name="PlayerAtlas" type="Node"]
+script = ExtResource( 2 )
+destination_path = "res://assets/playerSprites"
+
+[node name="SpaceShipBlue" type="Sprite" parent="."]
+position = Vector2( 105, 110 )
+texture = ExtResource( 1 )
+region_enabled = true
+region_rect = Rect2( 0, 12, 99, 174 )
+
+[node name="SpaceShipRed" type="Sprite" parent="."]
+position = Vector2( 282, 110 )
+texture = ExtResource( 1 )
+region_enabled = true
+region_rect = Rect2( 179, 12, 99, 174 )
+
+[node name="Moon" type="Sprite" parent="."]
+position = Vector2( 439, 110 )
+texture = ExtResource( 1 )
+region_enabled = true
+region_rect = Rect2( 356, 0, 144, 164 )
