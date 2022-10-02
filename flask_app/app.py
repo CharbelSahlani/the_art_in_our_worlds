@@ -13,6 +13,7 @@ from matplotlib.pyplot import imshow
 from PIL import Image
 import numpy as np
 import tensorflow as tf
+import cv2
 import pprint
 # %matplotlib inline
 
@@ -45,7 +46,6 @@ def userInput():
     plt.axis('off')
     plt.savefig(fname='./static/images/Dark-Matter-Image.png', transparent=True)
     plt.show()
-
     return render_template('index.html')
 
 @app.route("/generate_nst", methods=["POST"])
@@ -124,10 +124,112 @@ def generate_nst():
 
     return render_template('index.html')
 
+
 # retrieve file from 'static_temp/images' directory
 @app.route('/static_temp/images/<filename>')
 def send_image(filename):
     return send_from_directory("static_temp/images", filename)
+
+
+@app.route("/pixel_effect", methods=["POST"])
+def pixel_effect():
+    # some parametters
+    image_path = './static/images/Dark-Matter-Image.png'
+    size = (32, 32)
+
+    # read the image
+    image = Image.open(image_path)
+
+    # Bilinear interpolation
+    small_img = image.resize(size, Image.BILINEAR)
+
+    # output image NEAREST
+    output_img = small_img.resize(image.size, Image.NEAREST)
+
+    # Display
+    plt.imshow(output_img)
+    plt.axis('off')
+    plt.savefig(fname='./static/images/Dark-Matter-Image.png', transparent=True)
+    plt.show()
+    return render_template('index.html')
+
+@app.route("/cartoon_effect", methods=["POST"])
+def cartoon_effect():
+    # some parametters
+    image_path = './static/images/Dark-Matter-Image.png'
+    # read image into rgb
+    img = cv2.imread(image_path)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+    # image to grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    gray = cv2.medianBlur(gray, 5)
+
+    # read edges
+    edges = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 9, 9)
+    plt.figure(figsize=(10, 10))
+
+    # cartoon
+    color = cv2.bilateralFilter(img, 9, 250, 250)
+    cartoon = cv2.bitwise_and(color, color, mask=edges)
+
+    # display img
+    plt.figure(figsize=(10, 10))
+    plt.imshow(cartoon, cmap="gray")
+
+    # Display
+    plt.imshow(cartoon)
+    plt.axis('off')
+    plt.savefig(fname='./static/images/Dark-Matter-Image.png', transparent=True)
+    plt.show()
+    return render_template('index.html')
+
+
+@app.route("/sketch_effect", methods=["POST"])
+def sketch_effect():
+    # some parametters
+    image_path = './static/images/Dark-Matter-Image.png'
+    img = cv2.imread(image_path)
+
+    original_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img_gray = cv2.cvtColor(original_img, cv2.COLOR_BGR2GRAY)
+    img_invert = cv2.bitwise_not(img_gray)
+    img_smoothing = cv2.GaussianBlur(img_invert, (21, 21), sigmaX=0, sigmaY=0)
+    img_final = cv2.divide(img_gray, 255 - img_smoothing, scale=250)
+    plt.imshow(img_final, cmap="gray", vmin=200, vmax=255)
+    plt.axis('off')
+    plt.savefig(fname='./static/images/Dark-Matter-Image.png', transparent=True)
+    plt.show()
+    return render_template('index.html')
+
+
+@app.route("/watercolor_effect", methods=["POST"])
+def watercolor_effect():
+    # some parametters
+    image_path = './static/images/Dark-Matter-Image.png'
+    img = cv2.imread(image_path)
+    original_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    watercolour_image = cv2.stylization(original_img, sigma_s=100, sigma_r=0.45)
+    plt.imshow(watercolour_image)
+    plt.axis('off')
+    plt.savefig(fname='./static/images/Dark-Matter-Image.png', transparent=True)
+    plt.show()
+    return render_template('index.html')
+
+
+@app.route("/texture_effect", methods=["POST"])
+def texture_effect():
+    # some parametters
+    image_path = './static/images/Dark-Matter-Image.png'
+    img = cv2.imread(image_path)
+    original_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    sharp_img = cv2.detailEnhance(original_img, sigma_s=40, sigma_r=0.8)
+    tex_gray, tex_color = cv2.pencilSketch(sharp_img, sigma_s=10, sigma_r=0.40, shade_factor=0.02)
+    plt.imshow(tex_color)
+    plt.axis('off')
+    plt.savefig(fname='./static/images/Dark-Matter-Image.png', transparent=True)
+    plt.show()
+    return render_template('index.html')
 
 
 if __name__ == "__main__":
