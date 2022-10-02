@@ -1,12 +1,20 @@
-# web-app for API image manipulation
-
 from flask import Flask, request, render_template, send_from_directory
 import os
 from PIL import Image, ImageEnhance
 from image_and_translate_api import NasaApi
 from image_and_translate_api import TranslationApi
+from nst_class import NST
+import os
+import sys
+import scipy.io
+import scipy.misc
 import matplotlib.pyplot as plt
-# nst_class.load_vgg_model()
+from matplotlib.pyplot import imshow
+from PIL import Image
+import numpy as np
+import tensorflow as tf
+import pprint
+# %matplotlib inline
 
 app = Flask(__name__)
 
@@ -16,36 +24,6 @@ APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 @app.route("/")
 def main():
     return render_template('index.html')
-
-
-# upload selected image and forward to processing page
-@app.route("/upload", methods=["POST"])
-def upload():
-    target = os.path.join(APP_ROOT, 'static_temp/images/')
-
-    # create image directory if not found
-    if not os.path.isdir(target):
-        os.mkdir(target)
-    # retrieve file from html file-picker
-    upload = request.files.getlist("file")[0]
-    print("File name: {}".format(upload.filename))
-    filename = upload.filename
-
-    # file support verification
-    ext = os.path.splitext(filename)[1]
-    if (ext == ".jpg") or (ext == ".png") or (ext == ".bmp"):
-        print("File accepted")
-    else:
-        return render_template("error.html", message="The selected file is not supported"), 400
-
-    # save file
-    destination = "/".join([target, filename])
-    print("File saved to to:", destination)
-    upload.save(destination)
-
-    # forward to processing page
-    return render_template("processing.html", image_name=filename)
-
 
 
 def translate(text_to_translate):
@@ -68,35 +46,83 @@ def userInput():
     plt.savefig(fname='./static/images/Dark-Matter-Image.png', transparent=True)
     plt.show()
 
-    #plt.imsave("./static/images/Dark-Matter-Image.jpeg", images[0])
-    # output = open("./static/images/Dark-Matter-Image.jpeg", "wb")
-    # output.write(images[0])
-    # output.close()
-    # return images
     return render_template('index.html')
 
-# rotate filename the specified degrees
-@app.route("/rotate", methods=["POST"])
-def rotate():
-    # retrieve parameters from html form
-    angle = request.form['angle']
-    filename = request.form['image']
+@app.route("/generate_nst", methods=["POST"])
+def generate_nst():
+    # Load content and style images
+    content_image = np.array(Image.open("static/images/Dark-Matter-Image.png"))
+    style_image = np.array(Image.open("images/dbaye-400-400.jpg"))
+    # Create an NST object
+    nst_object = NST(content_image=content_image, style_image=style_image, img_size=400)
+    # Open and resize the content and style images
+    content_image = np.array(Image.open("images/nasa-400-400.jpg").resize((nst_object.img_size, nst_object.img_size)))
+    content_image = tf.constant(np.reshape(content_image, ((1,) + content_image.shape)))
+    style_image = np.array(Image.open("images/dbaye-400-400.jpg").resize((nst_object.img_size, nst_object.img_size)))
+    style_image = tf.constant(np.reshape(style_image, ((1,) + style_image.shape)))
 
-    # open and process image
-    target = os.path.join(APP_ROOT, 'static_temp/images')
-    destination = "/".join([target, filename])
+    # Display content image
+    print(content_image.shape)
+    imshow(content_image[0])
+    plt.show()
 
-    img = Image.open(destination)
-    img = img.rotate(-1 * int(angle))
+    # Display style image
+    print(style_image.shape)
+    imshow(style_image[0])
+    plt.show()
 
-    # save and return image
-    destination = "/".join([target, 'temp.png'])
-    if os.path.isfile(destination):
-        os.remove(destination)
-    img.save(destination)
+    # Randomly Initialize the Image to be Generated
+    generated_image = tf.Variable(tf.image.convert_image_dtype(content_image, tf.float32))
+    noise = tf.random.uniform(tf.shape(generated_image), 0, 0.5)
+    generated_image = tf.add(generated_image, noise)
+    generated_image = tf.clip_by_value(generated_image, clip_value_min=0.0, clip_value_max=1.0)
 
-    return send_image('temp.png')
+    # Display the noisy generated image
+    print(generated_image.shape)
+    imshow(generated_image.numpy()[0])
+    plt.show()
 
+    content_layer = [('block5_conv4', 1)]
+    nst_object.style_layers()
+    vgg_model_outputs = nst_object.get_layer_outputs(nst_object.load_vgg_model(),
+                                                     nst_object.STYLE_LAYERS + content_layer)
+
+    # Save the outputs for the content and style layers in separate variables.
+    content_target = vgg_model_outputs(content_image)  # Content encoder
+    style_targets = vgg_model_outputs(style_image)  # Style enconder
+
+    # Assign the content image to be the input of the VGG model.
+    # Set a_C to be the hidden layer activation from the layer we have selected
+    preprocessed_content = tf.Variable(tf.image.convert_image_dtype(content_image, tf.float32))
+    a_C = vgg_model_outputs(preprocessed_content)
+
+    # Set a_G to be the hidden layer activation from same layer. Here, a_G references model['conv4_2']
+    # and isn't evaluated yet. Later in the code, we'll assign the image G as the model input.
+    a_G = vgg_model_outputs(generated_image)
+
+    # Compute the content cost
+    J_content = nst_object.compute_content_cost(a_C, a_G)
+
+    print(J_content)
+
+    # Assign the input of the model to be the "style" image
+    preprocessed_style = tf.Variable(tf.image.convert_image_dtype(style_image, tf.float32))
+    a_S = vgg_model_outputs(preprocessed_style)
+
+    # Compute the style cost
+    J_style = nst_object.compute_style_cost(a_S, a_G, nst_object.STYLE_LAYERS)
+    print(J_style)
+
+    generated_image = tf.Variable(tf.image.convert_image_dtype(content_image, tf.float32))
+
+    nst_object.optimizer = tf.keras.optimizers.Adam(learning_rate=0.03)
+
+    # Show the generated image at some epochs
+    # Uncoment to reset the style transfer process. You will need to compile the train_step function again
+    epochs = 2501
+    nst_object.nst_training(epochs, generated_image)
+
+    return render_template('index.html')
 
 # retrieve file from 'static_temp/images' directory
 @app.route('/static_temp/images/<filename>')
