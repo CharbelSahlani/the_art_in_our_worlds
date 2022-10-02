@@ -82,10 +82,29 @@ label{
 }
 
 #gameDiv{
-    display: none;
+    align-self: center;
 }
 
 #NSTExample{
     color: white;
     font-family: spaceFont;
 }
+
+#display-image{
+    width: 400px;
+    height: 225px;
+    border: 1px solid black;
+    background-position: center;
+    background-size: cover;
+  }
+
+  #userImageDiv{
+    display: none;
+  }
+
+  #google_translate_element{
+    align-self: flex-end;
+    padding-right: 15px;
+    padding-top: 5px;
+  }
+  
