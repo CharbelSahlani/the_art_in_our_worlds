@@ -108,3 +108,43 @@ label{
     padding-top: 5px;
   }
   
+  .fa {
+    padding: 20px;
+    font-size: 30px;
+    width: 50px;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .fa:hover {
+    opacity: 0.7;
+  }
+
+  .fa-instagram {
+    background: #125688;
+    color: white;
+}
+
+  .fa-facebook {
+    background: #3B5998;
+    color: white;
+  }
+
+  .fa-twitter {
+    background: #55ACEE;
+    color: white;
+  }
+
+  .customBtns{
+    background-color:white ;
+    color: rgb(10, 0, 10);
+    border-radius: 5px;
+    padding: 5px;
+    font-family: spaceFont;
+    font-weight: bolder;
+    cursor: pointer;
+  }
+
+  .customBtns:hover{
+    background-color:lightgray;
+  }
