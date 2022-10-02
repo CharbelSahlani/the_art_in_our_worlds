@@ -14,6 +14,7 @@ from PIL import Image
 import numpy as np
 import tensorflow as tf
 import cv2
+import urllib.request
 import pprint
 # %matplotlib inline
 
@@ -48,9 +49,18 @@ def userInput():
     plt.show()
     return render_template('index.html')
 
+
+def download_image(url, file_path, file_name):
+    full_path = file_path + file_name + '.jpg'
+    urllib.urlretrieve(url, full_path)
+
+
 @app.route("/generate_nst", methods=["POST"])
 def generate_nst():
     # Load content and style images
+    url = "url"
+    file_name = 'style_image'
+    download_image(url, 'static/images/', file_name)
     content_image = np.array(Image.open("static/images/Dark-Matter-Image.png"))
     style_image = np.array(Image.open("images/dbaye-400-400.jpg"))
     # Create an NST object
