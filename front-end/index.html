@@ -7,16 +7,20 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 
+<!-- google translate dropdown -->
+<div id="google_translate_element"></div>
 
 <h2 id="welcome">Team Dark Matter's space app</h2>
 
 <h3>Enter a prompt to retrieve an image from the Nasa database. Add some keywords for more accurate results</h3>
 
+<!-- form to submit to api -->
 <form action="">
 <input type="text" name="userInput" placeholder="Enter a prompt" id='userInput'/>
-<input type="text" name="keywords" placeholder="Keywords" id='keyword'/>
+<input type="text" name="keywords" placeholder="Keywords" id='keywords'/>
 <input type="submit"/>
 <br>
+<!-- checkBox for nst -->
 <input type="checkbox" id="nst" name='nst' value="nst"/>
 <label for="nst">Neural style transfer <a target="_blank" id="NSTExample" href="https://datascience-enthusiast.com/figures/louvre_generated.png">Example</a></label>
 </form>
@@ -28,22 +32,21 @@
 <div id="display-image"></div>
 </div>
 
-<div id="google_translate_element"></div> 
+ 
 
-
+<!-- displaying the image -->
 <h4>click on image to edit</h4>
-<img id="image" width="640px" height="380px" src="./images/Dark-Matter-Image.jpeg"/>
+<img id="image" width="640px" height="450px" src="./images/Dark-Matter-Image.png"/>
 
-<button id="showGame">Game</button>
 
-<!-- game div -->
-<div id="gameDiv">
+
+<!-- game section -->
 <h4>While waiting for your image to load, please enjoy the 2 mini games below</h4>
 <iframe frameborder="0" src="https://itch.io/embed-upload/6583848?color=333333" allowfullscreen="" width="640" height="380"><a href="https://bounasrnour.itch.io/mini-space-games">Play Mini Space Games on itch.io</a></iframe>
-</div>
 
 
-<!-- cdn -->
+
+<!-- editor cdn -->
 <script src="https://cdn.scaleflex.it/plugins/filerobot-image-editor/3.11.5/filerobot-image-editor.min.js"></script>
 
 <!-- loading the editor and oppening it on image click -->
@@ -57,6 +60,7 @@
 </script>
 
 
+<!-- google translate function -->
 <script type="text/javascript">
 function googleTranslateElementInit() { 
             new google.translate.TranslateElement(
@@ -66,11 +70,15 @@ function googleTranslateElementInit() {
         } 
 </script>
 
+<!-- loading the google translate api -->
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
 <!-- displaying the NST style image -->
 <script>
     var checkBox = document.getElementById("nst");
     var userImage = document.getElementById("userImageDiv");
 
+    //checking if the checkbox is checked
     checkBox.addEventListener('click',()=>{
         if (checkBox.checked == true){
     userImage.style.display = "block";
@@ -91,20 +99,6 @@ function googleTranslateElementInit() {
   reader.readAsDataURL(this.files[0]);
 });
 </script>
-
-<!-- displaying the game on button click -->
-<script>
-document.getElementById('showGame').addEventListener('click', ()=>{
-    document.getElementById('gameDiv').style.display='contents'
-})
-</script>
-
-<!-- loading the google translate api -->
-<script 
-type="text/javascript" 
-src="https://translate.google.com/translate_a/element.js?"
-cb="googleTranslateElementInit"
-></script>
 
 
 

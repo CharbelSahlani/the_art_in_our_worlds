@@ -82,7 +82,7 @@ label{
 }
 
 #gameDiv{
-    display: none;
+    align-self: center;
 }
 
 #NSTExample{
@@ -101,3 +101,10 @@ label{
   #userImageDiv{
     display: none;
   }
+
+  #google_translate_element{
+    align-self: flex-end;
+    padding-right: 15px;
+    padding-top: 5px;
+  }
+  
