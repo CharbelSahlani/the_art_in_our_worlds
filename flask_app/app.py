@@ -3,22 +3,14 @@
 from flask import Flask, request, render_template, send_from_directory
 import os
 from PIL import Image, ImageEnhance
-import pickle
-
-try:
-    from google.colab import drive
-except ModuleNotFoundError as colab_not_found:
-    raise ModuleNotFoundError('Only run this cell on google colab!') from colab_not_found
-
-# This will prompt for authorization.
-drive.mount('/content/drive')
-
+from image_and_translate_api import NasaApi
+from image_and_translate_api import TranslationApi
+import matplotlib.pyplot as plt
 # nst_class.load_vgg_model()
 
 app = Flask(__name__)
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
-
 
 # default access page
 @app.route("/")
@@ -29,12 +21,11 @@ def main():
 # upload selected image and forward to processing page
 @app.route("/upload", methods=["POST"])
 def upload():
-    target = os.path.join(APP_ROOT, 'static/images/')
+    target = os.path.join(APP_ROOT, 'static_temp/images/')
 
     # create image directory if not found
     if not os.path.isdir(target):
         os.mkdir(target)
-
     # retrieve file from html file-picker
     upload = request.files.getlist("file")[0]
     print("File name: {}".format(upload.filename))
@@ -56,6 +47,34 @@ def upload():
     return render_template("processing.html", image_name=filename)
 
 
+
+def translate(text_to_translate):
+    translation_obj = TranslationApi("en", text_to_translate)
+    translation = translation_obj.translate_text()
+    return translation
+
+
+@app.route("/userInput", methods=["POST"])
+def userInput():
+    # retrieve parameters from html form
+    prompt = request.form['userInput']
+    prompt = translate(prompt)
+    keywords = request.form['keywords']
+    keywords = translate(keywords)
+    nasa_api_obj = NasaApi(search_input=prompt, keywords=keywords)
+    images = nasa_api_obj.process_images()
+    plt.imshow(images[1])
+    plt.axis('off')
+    plt.savefig(fname='./static/images/Dark-Matter-Image.png', transparent=True)
+    plt.show()
+
+    #plt.imsave("./static/images/Dark-Matter-Image.jpeg", images[0])
+    # output = open("./static/images/Dark-Matter-Image.jpeg", "wb")
+    # output.write(images[0])
+    # output.close()
+    # return images
+    return render_template('index.html')
+
 # rotate filename the specified degrees
 @app.route("/rotate", methods=["POST"])
 def rotate():
@@ -64,11 +83,11 @@ def rotate():
     filename = request.form['image']
 
     # open and process image
-    target = os.path.join(APP_ROOT, 'static/images')
+    target = os.path.join(APP_ROOT, 'static_temp/images')
     destination = "/".join([target, filename])
 
     img = Image.open(destination)
-    img = img.rotate(-1*int(angle))
+    img = img.rotate(-1 * int(angle))
 
     # save and return image
     destination = "/".join([target, 'temp.png'])
@@ -79,180 +98,11 @@ def rotate():
     return send_image('temp.png')
 
 
-# flip filename 'vertical' or 'horizontal'
-@app.route("/flip", methods=["POST"])
-def flip():
-
-    # retrieve parameters from html form
-    if 'horizontal' in request.form['mode']:
-        mode = 'horizontal'
-    elif 'vertical' in request.form['mode']:
-        mode = 'vertical'
-    else:
-        return render_template("error.html", message="Mode not supported (vertical - horizontal)"), 400
-    filename = request.form['image']
-
-    # open and process image
-    target = os.path.join(APP_ROOT, 'static/images')
-    destination = "/".join([target, filename])
-
-    img = Image.open(destination)
-
-    if mode == 'horizontal':
-        img = img.transpose(Image.FLIP_LEFT_RIGHT)
-    else:
-        img = img.transpose(Image.FLIP_TOP_BOTTOM)
-
-    # save and return image
-    destination = "/".join([target, 'temp.png'])
-    if os.path.isfile(destination):
-        os.remove(destination)
-    img.save(destination)
-
-    return send_image('temp.png')
-
-
-# crop filename from (x1,y1) to (x2,y2)
-@app.route("/crop", methods=["POST"])
-def crop():
-    # retrieve parameters from html form
-    x1 = int(request.form['x1'])
-    y1 = int(request.form['y1'])
-    x2 = int(request.form['x2'])
-    y2 = int(request.form['y2'])
-    filename = request.form['image']
-
-    # open image
-    target = os.path.join(APP_ROOT, 'static/images')
-    destination = "/".join([target, filename])
-
-    img = Image.open(destination)
-
-    # check for valid crop parameters
-    width = img.size[0]
-    height = img.size[1]
-
-    crop_possible = True
-    if not 0 <= x1 < width:
-        crop_possible = False
-    if not 0 < x2 <= width:
-        crop_possible = False
-    if not 0 <= y1 < height:
-        crop_possible = False
-    if not 0 < y2 <= height:
-        crop_possible = False
-    if not x1 < x2:
-        crop_possible = False
-    if not y1 < y2:
-        crop_possible = False
-
-    # crop image and show
-    if crop_possible:
-        img = img.crop((x1, y1, x2, y2))
-        
-        # save and return image
-        destination = "/".join([target, 'temp.png'])
-        if os.path.isfile(destination):
-            os.remove(destination)
-        img.save(destination)
-        return send_image('temp.png')
-    else:
-        return render_template("error.html", message="Crop dimensions not valid"), 400
-    return '', 204
-
-
-# blend filename with stock photo and alpha parameter
-@app.route("/blend", methods=["POST"])
-def blend():
-    # retrieve parameters from html form
-    alpha = request.form['alpha']
-    filename1 = request.form['image']
-
-    # open images
-    target = os.path.join(APP_ROOT, 'static/images')
-    filename2 = 'blend.jpg'
-    destination1 = "/".join([target, filename1])
-    destination2 = "/".join([target, filename2])
-
-    img1 = Image.open(destination1)
-    img2 = Image.open(destination2)
-
-    # resize images to max dimensions
-    width = max(img1.size[0], img2.size[0])
-    height = max(img1.size[1], img2.size[1])
-
-    img1 = img1.resize((width, height), Image.ANTIALIAS)
-    img2 = img2.resize((width, height), Image.ANTIALIAS)
-
-    # if image in gray scale, convert stock image to monochrome
-    if len(img1.mode) < 3:
-        img2 = img2.convert('L')
-
-    # blend and show image
-    img = Image.blend(img1, img2, float(alpha)/100)
-
-    # save and return image
-    destination = "/".join([target, 'temp.png'])
-    if os.path.isfile(destination):
-        os.remove(destination)
-    img.save(destination)
-
-    return send_image('temp.png')
-
-
-# Change brightness of filename the specified factor
-@app.route("/brightness", methods=["POST"])
-def brightness():
-    # retrieve parameters from html form
-    brightness_factor = float(request.form['brightness_factor'])
-    filename = request.form['image']
-
-    # open and process image
-    target = os.path.join(APP_ROOT, 'static/images')
-    destination = "/".join([target, filename])
-
-    img = Image.open(destination)
-    img = ImageEnhance.Brightness(img)
-    img = img.enhance(brightness_factor)
-
-    # save and return image
-    destination = "/".join([target, 'temp.png'])
-    if os.path.isfile(destination):
-        os.remove(destination)
-    img.save(destination)
-
-    return send_image('temp.png')
-
-# Change contrast of filename the specified factor
-@app.route("/contrast", methods=["POST"])
-def contrast():
-    # retrieve parameters from html form
-    contrast_factor = float(request.form['contrast_factor'])
-    filename = request.form['image']
-
-    # open and process image
-    target = os.path.join(APP_ROOT, 'static/images')
-    destination = "/".join([target, filename])
-
-    img = Image.open(destination)
-    img = ImageEnhance.Contrast(img)
-    img = img.enhance(contrast_factor)
-
-    # save and return image
-    destination = "/".join([target, 'temp.png'])
-    if os.path.isfile(destination):
-        os.remove(destination)
-    img.save(destination)
-
-    return send_image('temp.png')
-
-
-# retrieve file from 'static/images' directory
-@app.route('/static/images/<filename>')
+# retrieve file from 'static_temp/images' directory
+@app.route('/static_temp/images/<filename>')
 def send_image(filename):
-    return send_from_directory("static/images", filename)
+    return send_from_directory("static_temp/images", filename)
 
 
 if __name__ == "__main__":
     app.run()
-
